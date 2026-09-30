@@ -38,6 +38,16 @@ dist/
 *.sqlite
 *.sqlite3
 *.log
+data/raw/*
+data/processed/*
+reports/*.json
+reports/*.md
+!reports/README.md
+!reports/failure_analysis.md
+experiments/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!experiments/README.md
 
 # Jupyter
 .ipynb_checkpoints/
