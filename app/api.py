@@ -56,10 +56,23 @@ async def extract(
             path = Path(directory) / f"document{suffix}"
             path.write_bytes(content)
             if pipeline in {"ocr", "both"}:
-                results.append(OCRLayoutPipeline(settings.ocr_language).process(path, request_id))
+                results.append(
+                    OCRLayoutPipeline(
+                        settings.ocr_language,
+                        settings.tesseract_cmd,
+                    ).process(path, request_id)
+                )
             if pipeline in {"vlm", "both"}:
                 results.append(
-                    QwenVLM(settings.vlm_model_name, settings.vlm_device).process(path, request_id)
+                    QwenVLM(
+                        settings.vlm_model_name,
+                        settings.vlm_device,
+                        max_new_tokens=settings.vlm_max_new_tokens,
+                        backend=settings.vlm_backend,
+                        base_url=settings.vlm_base_url,
+                        timeout_seconds=settings.vlm_timeout_seconds,
+                        context_size=settings.vlm_context_size,
+                    ).process(path, request_id)
                 )
     except (OSError, ValueError) as error:
         logger.exception("document processing failed request_id=%s", request_id)

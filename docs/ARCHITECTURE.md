@@ -15,4 +15,21 @@ flowchart TD
   A --> V
 ```
 
-Processors are isolated behind a common `DocumentResult` contract. API and UI code do not own extraction logic. VLM weights are optional and external to the default container image; CPU-only tests use fakes and malformed-output fixtures.
+## FUNSD experiment
+
+```mermaid
+flowchart LR
+  I[FUNSD test image] --> T[Tesseract OCR]
+  T --> W[Words + pixel boxes]
+  W --> L[LayoutLMv3 token classification]
+  L --> B[BIO/subword aggregation]
+  B --> E1[FUNSD entities]
+  I --> Q[Qwen FUNSD prompt]
+  Q --> J[Strict JSON validation]
+  J --> E2[FUNSD entities]
+  E1 --> M[Shared entity evaluator]
+  E2 --> M
+  G[FUNSD annotations] --> M
+```
+
+Processors are isolated behind a common `DocumentResult` contract. FUNSD entities are carried in `DocumentResult.metadata["funsd_entities"]`; generic fields and tables remain separate. Both pipelines use the official test split and are evaluated by the same entity matcher. VLM weights and LayoutLMv3 checkpoints are optional and external to the default container image; CPU-only tests use fakes and mocked outputs.
